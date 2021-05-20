@@ -46,16 +46,18 @@ static void test_parse_false() {
     EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(&v));
 }
 
+#define TEST_ERROR(error, json) \
+    do {\
+        lept_value v;\
+        v.type = LEPT_FALSE;\
+        EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, json));\
+        EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));\
+    }while(0)
+
+
 static void test_parse_expect_value() {
-    lept_value v;
-
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, ""));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
-
-    v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_EXPECT_VALUE, lept_parse(&v, " "));
-    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "");
+    TEST_ERROR(LEPT_PARSE_INVALID_VALUE, " ");
 }
 
 static void test_parse_invalid_value() {
