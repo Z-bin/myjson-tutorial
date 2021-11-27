@@ -28,6 +28,8 @@ enum {
     LEPT_PARSE_ROOT_NOT_SINGULAR,   // 若值不是那三种字面值
     LEPT_PARSE_NUMBER_TOO_BIG,      // 数字溢出
     LEPT_PARSE_MISS_QUOTATION_MARK, // 引号
+    LEPT_PARSE_INVALID_STRING_ESCAPE, // 无效转译
+    LEPT_PARSE_INVALID_STRING_CHAR // 无效字符串
 };
 
 // 初始化类型
@@ -42,7 +44,7 @@ void lept_free(lept_value *v);
 // 获取返回类型
 lept_type lept_get_type(const lept_value *v);
 
-#define lept_set_null(v) lept_free(v);
+#define lept_set_null(v) lept_free(v)
 
 int lept_get_boolean(const lept_value *v);
 void lept_set_boolean(lept_value *v, int b);
