@@ -19,13 +19,13 @@ static int test_pass = 0;
         }\
     } while(0)
 
-
+// 判断是否相等
 #define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE((expect == actual), expect, actual, "%d")
 
 // "null"测试
 static void test_parse_null() {
     lept_value v;
-    v.type = LEPT_FALSE;
+    v.type = LEPT_TRUE;
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "null"));
     EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
 }
@@ -34,8 +34,8 @@ static void test_parse_null() {
 static void test_parse_true() {
     lept_value v;
     v.type = LEPT_FALSE;
-    EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "true"));
-    EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));
+    EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "true")); // 先解析值
+    EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));          // 然后再解析类型
 }
 
 // "false"测试

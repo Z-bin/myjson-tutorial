@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+// 判断是否相等，不是则抛出异常，是则跳到下一字符
 #define EXPECT(c, ch)       do { assert(*c->json == ch); c->json++;} while(0);
 
 typedef struct {
@@ -55,6 +56,7 @@ static int lept_parse_null(lept_context *c, lept_value *v)
     return LEPT_PARSE_OK;
 }
 
+// 写入解析出来的根值
 static int lept_parse_value(lept_context *c, lept_value *v)
 {
     switch (*c->json) {
@@ -80,6 +82,7 @@ static int lept_parse_value(lept_context *c, lept_value *v)
     }
 }
 
+// 解析后返回对应的类型
 int lept_parse(lept_value *v, const char *json)
 {
     lept_context c;
