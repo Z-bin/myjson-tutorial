@@ -85,7 +85,6 @@ static void test_parse_number() {
     TEST_NUMBER(1.234E-10, "1.234E-10");
     TEST_NUMBER(0.0, "1e-10000"); /* must underflow */
 
-
     TEST_NUMBER(1.0000000000000002, "1.0000000000000002"); /* the smallest number > 1 */
     TEST_NUMBER( 4.9406564584124654e-324, "4.9406564584124654e-324"); /* minimum denormal */
     TEST_NUMBER(-4.9406564584124654e-324, "-4.9406564584124654e-324");
