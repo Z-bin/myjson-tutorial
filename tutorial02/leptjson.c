@@ -22,6 +22,7 @@ static void lept_parse_whitespace(lept_context *c)
     c->json = p;
 }
 
+// 解析 true, false, null
 static int lept_parse_literal(lept_context *c, lept_value *v, const char *literal, lept_type type) {
     size_t i;
     EXPECT(c, literal[0]);
