@@ -17,7 +17,7 @@
 typedef struct {
     const char *json;
     char *stack;
-    size_t size, top;
+    size_t size, top; // size 是当前的堆栈容量，top 是栈顶的位置
 }lept_context;
 
 
@@ -219,6 +219,7 @@ double lept_get_number(const lept_value *v)
     return v->u.n;
 }
 
+// 设置字符串
 void lept_set_string(lept_value *v, const char *s, size_t len)
 {
     assert(v != NULL && (s != NULL || len == 0));
