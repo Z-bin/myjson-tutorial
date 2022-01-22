@@ -154,11 +154,13 @@ static void test_parse_number_too_big() {
     TEST_ERROR(LEPT_PARSE_NUMBER_TOO_BIG, "-1e309");
 }
 
+// 缺少引号
 static void test_parse_missing_quotation_mark() {
     TEST_ERROR(LEPT_PARSE_MISS_QUOTATION_MARK, "\"");
     TEST_ERROR(LEPT_PARSE_MISS_QUOTATION_MARK, "\"abc");
 }
 
+// 无效转译
 static void test_parse_invalid_string_escape() {
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_ESCAPE, "\"\\v\"");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_ESCAPE, "\"\\'\"");
@@ -166,6 +168,7 @@ static void test_parse_invalid_string_escape() {
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_ESCAPE, "\"\\x12\"");
 }
 
+// 非法字符
 static void test_parse_invalid_string_char() {
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_CHAR, "\"\x01\"");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_CHAR, "\"\x1F\"");

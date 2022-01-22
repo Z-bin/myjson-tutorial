@@ -116,7 +116,7 @@ static int lept_parse_number(lept_context *c, lept_value *v) {
 static int lept_parse_string(lept_context *c, lept_value *v) {
     size_t head = c->top, len;
     const char *p;
-    EXPECT(c, '\"');
+    EXPECT(c, '\"'); // 跳过开头"
     p = c->json;
     while(1) {
         char ch = *p++;
