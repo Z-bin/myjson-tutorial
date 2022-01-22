@@ -121,9 +121,9 @@ static int lept_parse_string(lept_context *c, lept_value *v) {
     while(1) {
         char ch = *p++;
         switch (ch) {
-        case '\"':
+        case '\"': // 字符串结尾了
             len = c->top - head;
-            lept_set_string(v, (const char*)lept_context_pop(c, len), len);
+            lept_set_string(v, (const char*)lept_context_pop(c, len), len); // 最后计算出长度并一次性把所有字符弹出
             c->json = p;
             return LEPT_PARSE_OK;
             break;
