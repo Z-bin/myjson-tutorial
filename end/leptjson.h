@@ -31,7 +31,7 @@ enum {
     LEPT_PARSE_INVALID_STRING_ESCAPE, // 无效转译
     LEPT_PARSE_INVALID_STRING_CHAR, // 无效字符串
     LEPT_PARSE_INVALID_UNICODE_HEX, //  无效Unicode
-    LEPT_PARSE_INVALID_UNICODE_SURROGATE,
+    LEPT_PARSE_INVALID_UNICODE_SURROGATE, // 只有高代理项而欠缺低代理项，或是低代理项不在合法码点范围
 };
 
 // 初始化类型
