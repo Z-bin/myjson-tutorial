@@ -8,18 +8,18 @@ typedef enum {
     LEPT_NULL, LEPT_FALSE, LEPT_TRUE, LEPT_NUMBER, LEPT_STRING, LEPT_ARRAY, LEPT_OBJECT
 } lept_type;
 
+typedef struct lept_value lept_value;  // 前置声明
+
 // 声明 JSON 的数据结构
-typedef struct {
+struct lept_value {
     union {
-        struct {       // 字符串
-            char *s;
-            size_t len;
-        }s;
+        struct {lept_value *e; size_t size; }a; // 数组
+        struct { char *s; size_t len; }s; // 字符串
         double n;      // 数字
     }u;
 
     lept_type type;
-}lept_value;
+};
 
 enum {
     LEPT_PARSE_OK = 0,              // 无错误
@@ -32,6 +32,7 @@ enum {
     LEPT_PARSE_INVALID_STRING_CHAR, // 无效字符串
     LEPT_PARSE_INVALID_UNICODE_HEX, //  无效Unicode
     LEPT_PARSE_INVALID_UNICODE_SURROGATE, // 只有高代理项而欠缺低代理项，或是低代理项不在合法码点范围
+    LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET,// 缺少逗号/方括号的数组
 };
 
 // 初始化类型
@@ -59,6 +60,10 @@ const char *lept_get_string(const lept_value *v);
 size_t lept_get_string_length(const lept_value *v);
 void lept_set_string(lept_value *v, const char *s, size_t len);
 
+// 数组大小
+size_t lept_get_array_size(const lept_value *v);
+// 获取数组元素
+lept_value *lept_get_array_element(const lept_value *v, size_t index);
 #endif /* LEPTJSON_H__ */
 
 

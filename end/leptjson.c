@@ -209,32 +209,55 @@ static int lept_parse_string(lept_context *c, lept_value *v) {
     }
 }
 
+static int lept_parse_array(lept_context *c, lept_value *v);
+
 static int lept_parse_value(lept_context *c, lept_value *v)
 {
     switch (*c->json) {
-    case 't':
-    {
-        return lept_parse_literal(c, v, "true", LEPT_TRUE);
+        case 't' : return lept_parse_literal(c, v, "true", LEPT_TRUE);
+        case 'f' : return lept_parse_literal(c, v, "false", LEPT_FALSE);
+        case 'n' : return lept_parse_literal(c, v, "null", LEPT_NULL);
+        case '\0': return LEPT_PARSE_EXPECT_VALUE;
+        case '\"': return lept_parse_string(c, v);
+        case '[' : return lept_parse_array(c, v);
+        default:   return lept_parse_number(c, v);
     }
-    case 'f':
-    {   return lept_parse_literal(c, v, "false", LEPT_FALSE);
+}
+
+static int lept_parse_array(lept_context *c, lept_value *v) {
+    size_t size = 0;
+    int ret;
+    EXPECT(c, '[');
+    lept_parse_whitespace(c);
+    // 空数组
+    if (*c->json == ']') {
+        c->json++;
+        v->type = LEPT_ARRAY;
+        v->u.a.size = 0;
+        v->u.a.e = NULL;
+        return LEPT_PARSE_OK;
     }
-    case 'n':
-    {
-        return lept_parse_literal(c, v, "null", LEPT_NULL);
-    }
-    case '\0':
-    {
-        return LEPT_PARSE_EXPECT_VALUE;
-    }
-    case '\"':
-    {
-        return lept_parse_string(c, v);
-    }
-    default:
-    {
-        return lept_parse_number(c, v);
-    }
+
+    while (1) {
+        lept_value e;
+        lept_init(&e);
+        if ((ret = lept_parse_value(c, &e)) != LEPT_PARSE_OK) {
+            return ret;
+        }
+        memcpy(lept_context_push(c, sizeof(lept_value)), &e, sizeof(lept_value)); // 未看懂
+        size++;
+        if (*c->json == ',') {
+            c->json++;
+        } else if (*c->json == ']') {
+            c->json++;
+            v->type = LEPT_ARRAY;
+            v->u.a.size = size;
+            size *= sizeof(lept_value);
+            memcpy(v->u.a.e = (lept_value*)malloc(size), lept_context_pop(c, size), size);
+            return LEPT_PARSE_OK;
+        } else {
+            return LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET;
+        }
     }
 }
 
@@ -324,4 +347,17 @@ size_t lept_get_string_length(const lept_value *v)
 {
     assert(v != NULL && v->type == LEPT_STRING);
     return v->u.s.len;
+}
+
+size_t lept_get_array_size(const lept_value *v)
+{
+    assert(v != NULL && v->type == LEPT_ARRAY);
+    return v->u.a.size;
+}
+
+lept_value *lept_get_array_element(const lept_value *v, size_t index)
+{
+    assert(v != NULL && v->type == LEPT_ARRAY);
+    assert(index < v->u.a.size);
+    return &v->u.a.e[index];
 }
