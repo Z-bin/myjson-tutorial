@@ -8,18 +8,27 @@ typedef enum {
     LEPT_NULL, LEPT_FALSE, LEPT_TRUE, LEPT_NUMBER, LEPT_STRING, LEPT_ARRAY, LEPT_OBJECT
 } lept_type;
 
-typedef struct lept_value lept_value;  // 前置声明
+// 前置声明
+typedef struct lept_value lept_value;
+typedef struct lept_member lept_member;
 
 // 声明 JSON 的数据结构
 struct lept_value {
     union {
-        struct {lept_value *e; size_t size; }a; // 数组
-        struct { char *s; size_t len; }s; // 字符串
-        double n;      // 数字
+        struct { lept_member* m; size_t size; }o; // 对象，对象数量
+        struct { lept_value *e; size_t size; }a;  // 数组，数组长度
+        struct { char *s; size_t len; }s;         // 字符串，字符串长度
+        double n;                                 // 数字
     }u;
 
     lept_type type;
 };
+
+struct lept_member {
+    char *k; size_t klen; // key, key string length
+    lept_value v;         // value
+};
+
 
 enum {
     LEPT_PARSE_OK = 0,              // 无错误
@@ -33,6 +42,9 @@ enum {
     LEPT_PARSE_INVALID_UNICODE_HEX, //  无效Unicode
     LEPT_PARSE_INVALID_UNICODE_SURROGATE, // 只有高代理项而欠缺低代理项，或是低代理项不在合法码点范围
     LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET,// 缺少逗号/方括号的数组
+    LEPT_PARSE_MISS_KEY,            // 缺少key
+    LEPT_PARSE_MISS_COLON,
+    LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET
 };
 
 // 初始化类型
@@ -64,6 +76,11 @@ void lept_set_string(lept_value *v, const char *s, size_t len);
 size_t lept_get_array_size(const lept_value *v);
 // 获取数组元素
 lept_value *lept_get_array_element(const lept_value *v, size_t index);
+
+size_t lept_get_object_size(const lept_value *v);
+const char* lept_get_object_key(const lept_value* v, size_t index);
+size_t lept_get_object_key_length(const lept_value* v, size_t index);
+lept_value* lept_get_object_value(const lept_value* v, size_t index);
 #endif /* LEPTJSON_H__ */
 
 

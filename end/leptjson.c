@@ -211,6 +211,7 @@ static int lept_parse_string(lept_context *c, lept_value *v) {
 }
 
 static int lept_parse_array(lept_context *c, lept_value *v);
+static int lept_parse_object(lept_context* c, lept_value* v);
 
 static int lept_parse_value(lept_context *c, lept_value *v)
 {
@@ -221,6 +222,7 @@ static int lept_parse_value(lept_context *c, lept_value *v)
         case '\0': return LEPT_PARSE_EXPECT_VALUE;
         case '\"': return lept_parse_string(c, v);
         case '[' : return lept_parse_array(c, v);
+        case '{':  return lept_parse_object(c, v);
         default:   return lept_parse_number(c, v);
     }
 }
@@ -270,6 +272,35 @@ static int lept_parse_array(lept_context *c, lept_value *v) {
         lept_free((lept_value*)lept_context_pop(c, sizeof(lept_value)));
     return ret;
 }
+
+
+static int lept_parse_object(lept_context* c, lept_value* v) {
+    size_t size;
+    lept_member m;
+    int ret;
+    EXPECT(c, '{');
+    lept_parse_whitespace(c);
+    if (*c->json == '}') {  // 空对象
+        c->json++;
+        v->type = LEPT_OBJECT;
+        v->u.o.m = 0;
+        v->u.o.size = 0;
+        return LEPT_PARSE_OK;
+    }
+
+    m.k = NULL;
+    size = 0;
+    for (;;) {
+        lept_init(&m.v);
+        if ((ret = lept_parse_value(c, &m.v)) != LEPT_PARSE_OK)
+            break;
+        memcpy(lept_context_push(c, sizeof(lept_member)), &m, sizeof(lept_member));
+        size++;
+        m.k = NULL;
+    }
+    return ret;
+}
+
 
 int lept_parse(lept_value *v, const char *json)
 {
@@ -382,4 +413,31 @@ lept_value *lept_get_array_element(const lept_value *v, size_t index)
     assert(v != NULL && v->type == LEPT_ARRAY);
     assert(index < v->u.a.size);
     return &v->u.a.e[index];
+}
+
+size_t lept_get_object_size(const lept_value *v)
+{
+    assert(v != NULL && v->type == LEPT_OBJECT);
+    return v->u.o.size;
+}
+
+const char *lept_get_object_key(const lept_value *v, size_t index)
+{
+    assert(v != NULL && v->type == LEPT_OBJECT);
+    assert(index < v->u.o.size);
+    return v->u.o.m[index].k;
+}
+
+size_t lept_get_object_key_length(const lept_value *v, size_t index)
+{
+    assert(v != NULL && v->type == LEPT_OBJECT);
+    assert(index < v->u.o.size);
+    return v->u.o.m[index].klen;
+}
+
+lept_value *lept_get_object_value(const lept_value *v, size_t index)
+{
+    assert(v != NULL && v->type == LEPT_OBJECT);
+    assert(index < v->u.o.size);
+    return &v->u.o.m[index].v;
 }
